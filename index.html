@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardline Security Services | Elite Protection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#cc0000',
+                            dark: '#0a0a0a',
+                            gray: '#1f1f1f',
+                            lightgray: '#333333',
+                            textmuted: '#9ca3af'
+                        }
+                    },
+                    backgroundImage: {
+                        'hero-pattern': "linear-gradient(to right bottom, rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.75)), url('assets/hardline_6.jpg')",
+                        'cta-pattern': "linear-gradient(to right, rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.7)), url('assets/hardline_7.jpg')"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #cc0000; }
+
+        .text-glow { text-shadow: 0 0 10px rgba(204, 0, 0, 0.5); }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #cc0000;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+
+        .service-card { transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: #cc0000;
+            box-shadow: 0 10px 30px -10px rgba(204, 0, 0, 0.3);
+        }
+        .service-card img { transition: transform 0.5s ease; }
+        .service-card:hover img { transform: scale(1.05); }
+
+        .stat-divider { position: relative; }
+        .stat-divider:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0; top: 10%; height: 80%; width: 1px;
+            background: linear-gradient(to bottom, transparent, #333, transparent);
+        }
+
+        .timeline-step { position: relative; z-index: 10; }
+        .timeline-line {
+            position: absolute; top: 2rem; left: 50%; width: 100%; height: 1px;
+            background-color: #333; z-index: 0;
+        }
+        .timeline-step:last-child .timeline-line { display: none; }
+
+        /* ================= MARQUEE (scrolls away with the page) ================= */
+        .hud {
+            width: 100%; height: 28px; background: #050505; border-bottom: 1px solid #262626;
+            display: flex; align-items: center; overflow: hidden;
+            font-size: 10.5px; letter-spacing: .16em; color: #9ca3af; font-weight: 500;
+            position: relative; z-index: 40;
+        }
+        .hud .dot {
+            width: 6px; height: 6px; border-radius: 50%; background: #cc0000;
+            margin: 0 10px 0 20px; flex: none; animation: pulse 1.8s infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+        .hud-track { display: flex; white-space: nowrap; animation: ticker 30s linear infinite; }
+        .hud-track span { margin-right: 52px; text-transform: uppercase; }
+        .hud-track span i { color: #cc0000; margin-right: 8px; font-size: 9px; }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @media (max-width:600px) { .hud { font-size: 9px; } .hud .dot { margin: 0 8px 0 14px; } }
+
+        header#siteHeader {
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 1px solid rgba(51,51,51,.6);
+            background: rgba(10,10,10,.92);
+            backdrop-filter: blur(10px);
+            transition: padding .3s ease, box-shadow .3s ease;
+        }
+        header#siteHeader.scrolled { box-shadow: 0 8px 24px -12px rgba(0,0,0,.6); }
+
+        /* ================= LOADER ================= */
+        #loader {
+            position: fixed; inset: 0; z-index: 999; background: #0a0a0a;
+            display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 26px;
+            transition: opacity .8s ease, visibility .8s ease;
+        }
+        #loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+        #loader .loader-logo {
+            width: 76px; height: auto; opacity: 0;
+            animation: loaderLogoIn 1.3s cubic-bezier(.16,.84,.32,1) forwards;
+            filter: drop-shadow(0 0 24px rgba(204,0,0,.25));
+        }
+        @keyframes loaderLogoIn {
+            0% { opacity: 0; transform: scale(.75) translateY(8px); }
+            60% { opacity: 1; }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        #loader .lbar { width: 200px; height: 2px; background: #262626; position: relative; overflow: hidden; border-radius: 2px; }
+        #loader .lbar span {
+            position: absolute; left: 0; top: 0; height: 100%; width: 0%;
+            background: linear-gradient(90deg, #cc0000, #ff2b2b);
+            animation: loaderBar 2s cubic-bezier(.16,.84,.32,1) forwards;
+        }
+        @keyframes loaderBar { 0% { width: 0%; } 100% { width: 100%; } }
+        #loader .ltext {
+            font-size: 10.5px; letter-spacing: .32em; text-transform: uppercase; color: #9ca3af;
+            display: flex; align-items: center; gap: 10px;
+        }
+        #loader .ltext .ldot { width: 6px; height: 6px; border-radius: 50%; background: #cc0000; animation: pulse 1s infinite; }
+
+        /* mobile nav */
+        #mobileNav { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+        #mobileNav.open { max-height: 480px; }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-red selection:text-white">
+
+    <!-- LOADER -->
+    <div id="loader">
+        <img src="assets/logo.png" alt="Hardline Security Services" class="loader-logo">
+        <div class="lbar"><span></span></div>
+        <div class="ltext"><span class="ldot"></span> Establishing secure connection</div>
+    </div>
+
+    <!-- MARQUEE: in normal document flow, scrolls away with the page -->
+    <div class="hud">
+        <div class="hud-track">
+            <span><i class="fa-solid fa-circle"></i>ALL SECTORS CLEAR</span>
+            <span><i class="fa-solid fa-circle"></i>24/7 OPERATIONS ACTIVE</span>
+            <span><i class="fa-solid fa-circle"></i>NATIONWIDE RAPID RESPONSE</span>
+            <span><i class="fa-solid fa-circle"></i>LICENSED &amp; VETTED PERSONNEL</span>
+            <span><i class="fa-solid fa-circle"></i>CONFIDENTIALITY PROTOCOL ENGAGED</span>
+            <span><i class="fa-solid fa-circle"></i>ALL SECTORS CLEAR</span>
+            <span><i class="fa-solid fa-circle"></i>24/7 OPERATIONS ACTIVE</span>
+            <span><i class="fa-solid fa-circle"></i>NATIONWIDE RAPID RESPONSE</span>
+            <span><i class="fa-solid fa-circle"></i>LICENSED &amp; VETTED PERSONNEL</span>
+            <span><i class="fa-solid fa-circle"></i>CONFIDENTIALITY PROTOCOL ENGAGED</span>
+        </div>
+    </div>
+
+    <!-- HEADER: sticky, stays pinned to top once the marquee scrolls away -->
+    <header id="siteHeader">
+            <div class="container mx-auto px-5 sm:px-6 lg:px-8 flex justify-between items-center py-3.5 lg:py-4">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-3 group shrink-0">
+                    <img src="assets/logo.png" alt="Hardline shield" class="w-9 h-11 lg:w-10 lg:h-12 object-contain group-hover:opacity-80 transition-opacity">
+                    <div class="flex flex-col leading-none">
+                        <span class="text-lg lg:text-2xl font-bold tracking-widest text-white">HARDLINE</span>
+                        <span class="text-[0.55rem] lg:text-[0.6rem] tracking-[0.2em] text-brand-textmuted uppercase mt-1">Security Services</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden lg:flex items-center gap-10 xl:gap-12 text-sm font-medium tracking-wide">
+                    <a href="#" class="nav-link text-white active">HOME</a>
+                    <a href="#services" class="nav-link text-brand-textmuted hover:text-white">SERVICES</a>
+                    <a href="#industries" class="nav-link text-brand-textmuted hover:text-white">INDUSTRIES</a>
+                    <a href="#about" class="nav-link text-brand-textmuted hover:text-white">ABOUT</a>
+                    <a href="#why-us" class="nav-link text-brand-textmuted hover:text-white">WHY HARDLINE</a>
+                    <a href="#contact" class="nav-link text-brand-textmuted hover:text-white">CONTACT</a>
+                </nav>
+
+                <!-- CTA + Mobile Toggle -->
+                <div class="flex items-center gap-4">
+                    <a href="#contact" class="hidden lg:inline-flex items-center justify-center bg-brand-red hover:bg-red-800 text-white px-6 py-2.5 text-sm font-semibold tracking-wide transition-all duration-300 whitespace-nowrap">
+                        REQUEST CONSULTATION
+                        <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                    </a>
+                    <button id="mobileBtn" class="lg:hidden text-white text-xl w-10 h-10 flex items-center justify-center focus:outline-none">
+                        <i class="fa-solid fa-bars" id="mobileBtnIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Nav -->
+            <div id="mobileNav" class="lg:hidden border-t border-brand-lightgray">
+                <nav class="flex flex-col px-6 py-2 gap-1">
+                    <a href="#" class="mobile-link text-white py-3 border-b border-brand-lightgray/50 text-sm tracking-wide">HOME</a>
+                    <a href="#services" class="mobile-link text-brand-textmuted py-3 border-b border-brand-lightgray/50 text-sm tracking-wide">SERVICES</a>
+                    <a href="#industries" class="mobile-link text-brand-textmuted py-3 border-b border-brand-lightgray/50 text-sm tracking-wide">INDUSTRIES</a>
+                    <a href="#about" class="mobile-link text-brand-textmuted py-3 border-b border-brand-lightgray/50 text-sm tracking-wide">ABOUT</a>
+                    <a href="#why-us" class="mobile-link text-brand-textmuted py-3 border-b border-brand-lightgray/50 text-sm tracking-wide">WHY HARDLINE</a>
+                    <a href="#contact" class="mobile-link text-brand-textmuted py-3 text-sm tracking-wide">CONTACT</a>
+                    <a href="#contact" class="mobile-link inline-flex items-center justify-center bg-brand-red text-white px-6 py-3 text-sm font-semibold tracking-wide mt-3 mb-4">
+                        REQUEST CONSULTATION <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+    <section id="hero" class="relative min-h-screen flex items-center bg-hero-pattern bg-cover bg-center bg-no-repeat bg-fixed">
+        <div class="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/80 to-transparent z-0"></div>
+
+        <div class="container mx-auto px-5 sm:px-6 lg:px-8 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+            <div class="max-w-2xl">
+                <p class="text-brand-red font-semibold tracking-widest text-sm uppercase mb-4 text-glow">Elite Protection. Total Confidence.</p>
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-6">
+                    SECURITY<br/>
+                    WITHOUT<br/>
+                    COMPROMISE.
+                </h1>
+                <p class="text-base sm:text-lg md:text-xl text-gray-300 mb-10 max-w-lg leading-relaxed font-light">
+                    Elite protection services trusted by businesses, executives, and institutions that cannot afford failure.
+                </p>
+
+                <div class="flex flex-wrap gap-4">
+                    <a href="#contact" class="bg-brand-red hover:bg-red-800 text-white px-7 sm:px-8 py-3.5 sm:py-4 font-semibold tracking-wide flex items-center transition-all text-sm sm:text-base">
+                        REQUEST CONSULTATION
+                        <i class="fa-solid fa-arrow-right ml-3"></i>
+                    </a>
+                    <a href="#services" class="border border-white hover:bg-white hover:text-black text-white px-7 sm:px-8 py-3.5 sm:py-4 font-semibold tracking-wide flex items-center transition-all text-sm sm:text-base">
+                        EXPLORE SERVICES
+                        <i class="fa-solid fa-arrow-right ml-3"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-8 sm:bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce z-10 opacity-50">
+            <span class="text-xs uppercase tracking-widest mb-2 text-brand-textmuted">Scroll</span>
+            <i class="fa-solid fa-chevron-down text-brand-textmuted"></i>
+        </div>
+    </section>
+
+    <div class="bg-brand-gray border-y border-brand-lightgray py-6 relative z-20">
+        <div class="container mx-auto px-5 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 text-sm">
+                <div class="flex items-center gap-4 justify-center md:justify-start opacity-80 hover:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-clock text-brand-red text-xl"></i>
+                    <div><p class="font-bold text-white leading-tight">24/7</p><p class="text-brand-textmuted text-xs uppercase tracking-wider">Operations</p></div>
+                </div>
+                <div class="flex items-center gap-4 justify-center md:justify-start opacity-80 hover:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-user-shield text-brand-red text-xl"></i>
+                    <div><p class="font-bold text-white leading-tight">EXECUTIVE</p><p class="text-brand-textmuted text-xs uppercase tracking-wider">Protection</p></div>
+                </div>
+                <div class="flex items-center gap-4 justify-center md:justify-start opacity-80 hover:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-fighter-jet text-brand-red text-xl"></i>
+                    <div><p class="font-bold text-white leading-tight">RAPID</p><p class="text-brand-textmuted text-xs uppercase tracking-wider">Response</p></div>
+                </div>
+                <div class="flex items-center gap-4 justify-center md:justify-start opacity-80 hover:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-map-location-dot text-brand-red text-xl"></i>
+                    <div><p class="font-bold text-white leading-tight">NATIONWIDE</p><p class="text-brand-textmuted text-xs uppercase tracking-wider">Coverage</p></div>
+                </div>
+                <div class="flex items-center gap-4 justify-center md:justify-start col-span-2 md:col-span-4 lg:col-span-1 opacity-80 hover:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-eye-slash text-brand-red text-xl"></i>
+                    <div><p class="font-bold text-white leading-tight">DISCRETION</p><p class="text-brand-textmuted text-xs uppercase tracking-wider">Guaranteed</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="py-16 sm:py-20 bg-brand-dark border-b border-brand-lightgray">
+        <div class="container mx-auto px-5 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 sm:mb-16">
+                <p class="text-brand-red font-semibold tracking-widest text-xs uppercase">Trusted By Those Who Cannot Take Risks.</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 mb-16 sm:mb-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                <div class="text-xl font-serif tracking-tighter">J.P.Morgan</div>
+                <div class="flex items-center gap-2"><i class="fa-brands fa-mercedes text-2xl"></i><span class="font-serif">Mercedes-Benz</span></div>
+                <div class="text-2xl font-bold italic tracking-tighter">KPMG</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-globe text-xl text-blue-500"></i><div class="leading-tight"><span class="font-bold">IOM</span><br><span class="text-[0.5rem] tracking-wider uppercase">UN Migration</span></div></div>
+                <div class="text-xl font-bold tracking-tight">Deloitte.</div>
+                <div class="text-2xl font-light tracking-widest">EMAAR</div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8 text-center max-w-5xl mx-auto">
+                <div class="stat-divider p-4"><h3 class="text-4xl md:text-5xl font-bold text-white mb-2">15+</h3><p class="text-brand-textmuted text-xs uppercase tracking-widest leading-tight">Years Of<br>Experience</p></div>
+                <div class="stat-divider p-4"><h3 class="text-4xl md:text-5xl font-bold text-white mb-2">1,200+</h3><p class="text-brand-textmuted text-xs uppercase tracking-widest leading-tight">Security<br>Professionals</p></div>
+                <div class="stat-divider p-4"><h3 class="text-4xl md:text-5xl font-bold text-white mb-2">7 <span class="text-2xl">MIN</span></h3><p class="text-brand-textmuted text-xs uppercase tracking-widest leading-tight">Average Response<br>Time</p></div>
+                <div class="stat-divider p-4"><h3 class="text-4xl md:text-5xl font-bold text-white mb-2">98%</h3><p class="text-brand-textmuted text-xs uppercase tracking-widest leading-tight">Client<br>Satisfaction</p></div>
+                <div class="p-4"><h3 class="text-4xl md:text-5xl font-bold text-white mb-2">5,000+</h3><p class="text-brand-textmuted text-xs uppercase tracking-widest leading-tight">Successful<br>Operations</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="py-20 sm:py-24 bg-[#0d0d0d]">
+        <div class="container mx-auto px-5 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 sm:mb-16 gap-6">
+                <div class="max-w-2xl">
+                    <p class="text-brand-red font-semibold tracking-widest text-xs uppercase mb-3">Our Services</p>
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">PROTECTION TAILORED<br>TO YOUR WORLD.</h2>
+                </div>
+                <div class="max-w-md">
+                    <p class="text-gray-400 mb-4 text-sm font-light">Comprehensive security solutions designed to protect what matters most.</p>
+                    <a href="#" class="inline-flex items-center text-white hover:text-brand-red font-semibold text-sm tracking-wide transition-colors">
+                        VIEW ALL SERVICES <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="service-card group relative overflow-hidden bg-brand-gray border border-brand-lightgray">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="assets/hardline_personel_1.jpg" alt="Executive Protection" class="w-full h-full object-cover object-top opacity-50 group-hover:opacity-70 transition-opacity duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-gray to-transparent"></div>
+                                            </div>
+                    <div class="p-8 pt-4">
+                        <h3 class="text-xl font-bold text-white mb-3">EXECUTIVE<br>PROTECTION</h3>
+                        <p class="text-brand-textmuted text-sm mb-6 font-light leading-relaxed">Close protection for executives, high-net-worth individuals and their families.</p>
+                        <a href="#" class="text-brand-textmuted group-hover:text-white transition-colors block text-right"><i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="service-card group relative overflow-hidden bg-brand-gray border border-brand-lightgray">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="assets/hardline_6.jpg" alt="Corporate Security" class="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-gray to-transparent"></div>
+                                            </div>
+                    <div class="p-8 pt-4">
+                        <h3 class="text-xl font-bold text-white mb-3">CORPORATE<br>SECURITY</h3>
+                        <p class="text-brand-textmuted text-sm mb-6 font-light leading-relaxed">Integrated security solutions for businesses, offices and corporate environments.</p>
+                        <a href="#" class="text-brand-textmuted group-hover:text-white transition-colors block text-right"><i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="service-card group relative overflow-hidden bg-brand-gray border border-brand-lightgray">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="assets/hardline_2.jpg" alt="VIP Escort" class="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-gray to-transparent"></div>
+                                            </div>
+                    <div class="p-8 pt-4">
+                        <h3 class="text-xl font-bold text-white mb-3">VIP ESCORT</h3>
+                        <p class="text-brand-textmuted text-sm mb-6 font-light leading-relaxed">Secure transportation and escorts for dignitaries, executives and VIPs.</p>
+                        <a href="#" class="text-brand-textmuted group-hover:text-white transition-colors block text-right"><i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="service-card group relative overflow-hidden bg-brand-gray border border-brand-lightgray">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="assets/hardline_4.jpg" alt="Event Security" class="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-gray to-transparent"></div>
+                                            </div>
+                    <div class="p-8 pt-4">
+                        <h3 class="text-xl font-bold text-white mb-3">EVENT<br>SECURITY</h3>
+                        <p class="text-brand-textmuted text-sm mb-6 font-light leading-relaxed">Professional security management for events of all sizes and complexities.</p>
+                        <a href="#" class="text-brand-textmuted group-hover:text-white transition-colors block text-right"><i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="service-card group relative overflow-hidden bg-brand-gray border border-brand-lightgray">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="assets/hardline_5.jpg" alt="Residential Security" class="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-gray to-transparent"></div>
+                                            </div>
+                    <div class="p-8 pt-4">
+                        <h3 class="text-xl font-bold text-white mb-3">RESIDENTIAL<br>SECURITY</h3>
+                        <p class="text-brand-textmuted text-sm mb-6 font-light leading-relaxed">Discreet and advanced security for homes, estates and private properties.</p>
+                        <a href="#" class="text-brand-textmuted group-hover:text-white transition-colors block text-right"><i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="service-card group relative overflow-hidden bg-brand-gray border border-brand-lightgray">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="assets/hardline_3.jpg" alt="Rapid Response" class="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-gray to-transparent"></div>
+                                            </div>
+                    <div class="p-8 pt-4">
+                        <h3 class="text-xl font-bold text-white mb-3">RAPID RESPONSE<br>TEAMS</h3>
+                        <p class="text-brand-textmuted text-sm mb-6 font-light leading-relaxed">Highly trained teams deployed swiftly when every second counts.</p>
+                        <a href="#" class="text-brand-textmuted group-hover:text-white transition-colors block text-right"><i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="why-us" class="py-20 sm:py-24 bg-brand-dark border-t border-brand-lightgray">
+        <div class="container mx-auto px-5 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-3 gap-12 lg:gap-16">
+                <div class="lg:col-span-1">
+                    <p class="text-brand-red font-semibold tracking-widest text-xs uppercase mb-3">Why Hardline</p>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight mb-6">BUILT DIFFERENT.<br>BUILT TO PROTECT.</h2>
+                    <p class="text-gray-400 text-sm font-light leading-relaxed mb-8">
+                        We combine military discipline, advanced technology and intelligence-led operations to deliver unparalleled security solutions.
+                    </p>
+                    <a href="#about" class="inline-flex items-center border border-white hover:bg-white hover:text-black text-white px-6 py-3 text-xs font-semibold tracking-wide transition-all">
+                        LEARN MORE ABOUT US <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+
+                <div class="lg:col-span-2 grid sm:grid-cols-2 gap-x-12 gap-y-10">
+                    <div class="flex gap-4">
+                        <div class="text-brand-red text-3xl mt-1 opacity-80"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div><h4 class="text-white font-bold mb-2 tracking-wide text-sm">MILITARY DISCIPLINE</h4><p class="text-brand-textmuted text-sm font-light leading-relaxed">Operated by professionals trained to the highest standards.</p></div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="text-brand-red text-3xl mt-1 opacity-80"><i class="fa-solid fa-bolt"></i></div>
+                        <div><h4 class="text-white font-bold mb-2 tracking-wide text-sm">RAPID DEPLOYMENT</h4><p class="text-brand-textmuted text-sm font-light leading-relaxed">Quick, efficient and effective response when it matters most.</p></div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="text-brand-red text-3xl mt-1 opacity-80"><i class="fa-solid fa-fingerprint"></i></div>
+                        <div><h4 class="text-white font-bold mb-2 tracking-wide text-sm">CONFIDENTIALITY</h4><p class="text-brand-textmuted text-sm font-light leading-relaxed">Your privacy is our highest priority.</p></div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="text-brand-red text-3xl mt-1 opacity-80"><i class="fa-solid fa-microchip"></i></div>
+                        <div><h4 class="text-white font-bold mb-2 tracking-wide text-sm">ADVANCED TECHNOLOGY</h4><p class="text-brand-textmuted text-sm font-light leading-relaxed">Cutting-edge systems for superior threat detection.</p></div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="text-brand-red text-3xl mt-1 opacity-80"><i class="fa-solid fa-clipboard-check"></i></div>
+                        <div><h4 class="text-white font-bold mb-2 tracking-wide text-sm">CUSTOM SECURITY PLANS</h4><p class="text-brand-textmuted text-sm font-light leading-relaxed">Solutions tailored to your unique risk environment.</p></div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="text-brand-red text-3xl mt-1 opacity-80"><i class="fa-solid fa-id-card-clip"></i></div>
+                        <div><h4 class="text-white font-bold mb-2 tracking-wide text-sm">LICENSED PROFESSIONALS</h4><p class="text-brand-textmuted text-sm font-light leading-relaxed">Highly trained, vetted and fully certified.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-20 sm:py-24 bg-[#0d0d0d] border-t border-brand-lightgray">
+        <div class="container mx-auto px-5 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <div class="order-2 lg:order-1">
+                    <p class="text-brand-red font-semibold tracking-widest text-xs uppercase mb-3">About Hardline</p>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight mb-6">PROTECTION IS AN INVESTMENT.<br>TRUST IS EARNED.</h2>
+                    <p class="text-gray-400 text-sm font-light leading-relaxed mb-5">
+                        Hardline Security Services was built on a simple premise: the people protecting you should be more disciplined, better trained, and more accountable than the risks you're facing.
+                    </p>
+                    <p class="text-gray-400 text-sm font-light leading-relaxed mb-8">
+                        We don't sell guards. We sell the quiet certainty that comes from knowing your exposure has already been thought through.
+                    </p>
+                    <div class="text-xs tracking-[0.2em] text-brand-red font-semibold uppercase">Trained. Trusted. Hardline.</div>
+                </div>
+                <div class="order-1 lg:order-2 aspect-[4/3] overflow-hidden rounded">
+                    <img src="assets/hardline_7.jpg" alt="Hardline Security Services personnel lineup" class="w-full h-full object-cover grayscale-[15%]">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 sm:py-24 bg-brand-dark border-t border-brand-lightgray overflow-hidden">
+        <div class="container mx-auto px-5 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 sm:mb-20 max-w-2xl mx-auto">
+                <p class="text-brand-red font-semibold tracking-widest text-xs uppercase mb-3">Our Process</p>
+                <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">A PROVEN APPROACH<br>TO YOUR SECURITY.</h2>
+            </div>
+
+            <div class="relative max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-8 text-center relative z-10">
+                    <div class="timeline-step group">
+                        <div class="hidden md:block timeline-line group-hover:bg-brand-red transition-colors duration-500"></div>
+                        <div class="text-xs text-brand-textmuted font-mono mb-4 group-hover:text-brand-red transition-colors">01</div>
+                        <div class="w-16 h-16 mx-auto rounded-full border border-brand-red/50 bg-[#0d0d0d] flex items-center justify-center mb-6 relative z-10 group-hover:bg-brand-red/10 transition-colors shadow-[0_0_15px_rgba(204,0,0,0.2)]">
+                            <i class="fa-solid fa-comments text-brand-red text-xl"></i>
+                        </div>
+                        <h4 class="text-white font-bold text-sm mb-2 tracking-wide">CONSULTATION</h4>
+                        <p class="text-brand-textmuted text-xs font-light leading-relaxed">We listen, understand your needs and define your objectives.</p>
+                    </div>
+                    <div class="timeline-step group">
+                        <div class="hidden md:block timeline-line group-hover:bg-brand-red transition-colors duration-500"></div>
+                        <div class="text-xs text-brand-textmuted font-mono mb-4 group-hover:text-brand-red transition-colors">02</div>
+                        <div class="w-16 h-16 mx-auto rounded-full border border-brand-red/50 bg-[#0d0d0d] flex items-center justify-center mb-6 relative z-10 group-hover:bg-brand-red/10 transition-colors shadow-[0_0_15px_rgba(204,0,0,0.2)]">
+                            <i class="fa-solid fa-magnifying-glass-chart text-brand-red text-xl"></i>
+                        </div>
+                        <h4 class="text-white font-bold text-sm mb-2 tracking-wide">RISK ASSESSMENT</h4>
+                        <p class="text-brand-textmuted text-xs font-light leading-relaxed">We identify potential threats and evaluate vulnerabilities.</p>
+                    </div>
+                    <div class="timeline-step group">
+                        <div class="hidden md:block timeline-line group-hover:bg-brand-red transition-colors duration-500"></div>
+                        <div class="text-xs text-brand-textmuted font-mono mb-4 group-hover:text-brand-red transition-colors">03</div>
+                        <div class="w-16 h-16 mx-auto rounded-full border border-brand-red/50 bg-[#0d0d0d] flex items-center justify-center mb-6 relative z-10 group-hover:bg-brand-red/10 transition-colors shadow-[0_0_15px_rgba(204,0,0,0.2)]">
+                            <i class="fa-solid fa-sitemap text-brand-red text-xl"></i>
+                        </div>
+                        <h4 class="text-white font-bold text-sm mb-2 tracking-wide">SECURITY PLANNING</h4>
+                        <p class="text-brand-textmuted text-xs font-light leading-relaxed">We develop a tailored security strategy and operational plan.</p>
+                    </div>
+                    <div class="timeline-step group">
+                        <div class="hidden md:block timeline-line group-hover:bg-brand-red transition-colors duration-500"></div>
+                        <div class="text-xs text-brand-textmuted font-mono mb-4 group-hover:text-brand-red transition-colors">04</div>
+                        <div class="w-16 h-16 mx-auto rounded-full border border-brand-red/50 bg-[#0d0d0d] flex items-center justify-center mb-6 relative z-10 group-hover:bg-brand-red/10 transition-colors shadow-[0_0_15px_rgba(204,0,0,0.2)]">
+                            <i class="fa-solid fa-people-group text-brand-red text-xl"></i>
+                        </div>
+                        <h4 class="text-white font-bold text-sm mb-2 tracking-wide">DEPLOYMENT</h4>
+                        <p class="text-brand-textmuted text-xs font-light leading-relaxed">Our expert team implements the plan with precision.</p>
+                    </div>
+                    <div class="timeline-step group">
+                        <div class="text-xs text-brand-textmuted font-mono mb-4 group-hover:text-brand-red transition-colors">05</div>
+                        <div class="w-16 h-16 mx-auto rounded-full border border-brand-red/50 bg-[#0d0d0d] flex items-center justify-center mb-6 relative z-10 group-hover:bg-brand-red/10 transition-colors shadow-[0_0_15px_rgba(204,0,0,0.2)]">
+                            <i class="fa-solid fa-satellite-dish text-brand-red text-xl"></i>
+                        </div>
+                        <h4 class="text-white font-bold text-sm mb-2 tracking-wide">ONGOING MONITORING</h4>
+                        <p class="text-brand-textmuted text-xs font-light leading-relaxed">Continuous monitoring, evaluation and optimization.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="industries" class="py-20 sm:py-24 bg-brand-dark border-t border-brand-lightgray">
+        <div class="container mx-auto px-5 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16">
+                <div class="pr-0 lg:pr-12 lg:border-r border-brand-lightgray">
+                    <p class="text-brand-red font-semibold tracking-widest text-xs uppercase mb-8">What Our Clients Say</p>
+                    <div class="mb-8">
+                        <i class="fa-solid fa-quote-left text-4xl text-brand-lightgray mb-6 block"></i>
+                        <p class="text-xl md:text-2xl font-light text-white leading-relaxed mb-10">
+                            Hardline Security Services has been an exceptional partner in protecting our people, assets and operations. Their professionalism, discretion and responsiveness are unmatched.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full overflow-hidden bg-brand-gray border border-brand-lightgray">
+                            <img src="assets/hardline_personel_2.jpg" alt="Client representative" class="w-full h-full object-cover grayscale">
+                        </div>
+                        <div>
+                            <h5 class="text-white font-bold text-xs tracking-wider uppercase">CHIEF FINANCIAL OFFICER</h5>
+                            <p class="text-brand-textmuted text-xs">Multinational Financial Institution</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-brand-red font-semibold tracking-widest text-xs uppercase mb-8">Industries We Protect</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-6 text-center">
+                        <div class="group cursor-pointer"><i class="fa-solid fa-building-columns text-3xl text-brand-textmuted mb-4 group-hover:text-brand-red transition-colors"></i><h6 class="text-white text-xs font-bold uppercase tracking-wider">FINANCIAL<br>INSTITUTIONS</h6></div>
+                        <div class="group cursor-pointer"><i class="fa-solid fa-landmark-flag text-3xl text-brand-textmuted mb-4 group-hover:text-brand-red transition-colors"></i><h6 class="text-white text-xs font-bold uppercase tracking-wider">EMBASSIES &<br>DIPLOMATIC</h6></div>
+                        <div class="group cursor-pointer"><i class="fa-solid fa-house-user text-3xl text-brand-textmuted mb-4 group-hover:text-brand-red transition-colors"></i><h6 class="text-white text-xs font-bold uppercase tracking-wider">LUXURY<br>ESTATES</h6></div>
+                        <div class="group cursor-pointer"><i class="fa-solid fa-helmet-safety text-3xl text-brand-textmuted mb-4 group-hover:text-brand-red transition-colors"></i><h6 class="text-white text-xs font-bold uppercase tracking-wider">CONSTRUCTION &<br>INFRASTRUCTURE</h6></div>
+                        <div class="group cursor-pointer"><i class="fa-solid fa-shop text-3xl text-brand-textmuted mb-4 group-hover:text-brand-red transition-colors"></i><h6 class="text-white text-xs font-bold uppercase tracking-wider">RETAIL</h6></div>
+                        <div class="group cursor-pointer"><i class="fa-solid fa-building-user text-3xl text-brand-textmuted mb-4 group-hover:text-brand-red transition-colors"></i><h6 class="text-white text-xs font-bold uppercase tracking-wider">GOVERNMENT</h6></div>
+                        <div class="group cursor-pointer"><i class="fa-solid fa-martini-glass-citrus text-3xl text-brand-textmuted mb-4 group-hover:text-brand-red transition-colors"></i><h6 class="text-white text-xs font-bold uppercase tracking-wider">HOSPITALITY</h6></div>
+                        <div class="group cursor-pointer"><i class="fa-solid fa-building text-3xl text-brand-textmuted mb-4 group-hover:text-brand-red transition-colors"></i><h6 class="text-white text-xs font-bold uppercase tracking-wider">CORPORATE<br>OFFICES</h6></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="relative py-20 sm:py-24 bg-cta-pattern bg-cover bg-center bg-no-repeat bg-fixed border-t border-brand-red/30">
+        <div class="absolute inset-0 bg-brand-dark/80 backdrop-blur-[2px]"></div>
+        <div class="container mx-auto px-5 sm:px-6 lg:px-8 relative z-10 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">YOUR SECURITY DESERVES<br>MORE THAN ORDINARY.</h2>
+            <a href="#contact" class="inline-flex items-center bg-brand-red hover:bg-red-800 text-white px-8 py-4 font-semibold tracking-wide transition-all mt-4">
+                SCHEDULE A PRIVATE CONSULTATION <i class="fa-solid fa-arrow-right ml-3"></i>
+            </a>
+        </div>
+    </section>
+
+    <footer id="contact" class="bg-black pt-16 sm:pt-20 pb-10 border-t border-brand-lightgray">
+        <div class="container mx-auto px-5 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+                <div class="lg:col-span-2">
+                    <a href="#" class="flex items-center gap-3 mb-6 group">
+                        <img src="assets/logo.png" alt="Hardline shield" class="w-8 h-10 object-contain group-hover:opacity-80 transition-opacity">
+                        <div class="flex flex-col leading-none">
+                            <span class="text-xl font-bold tracking-widest text-white">HARDLINE</span>
+                            <span class="text-[0.5rem] tracking-[0.2em] text-brand-textmuted uppercase mt-1">Security Services</span>
+                        </div>
+                    </a>
+                    <p class="text-brand-textmuted text-sm font-light leading-relaxed mb-6 max-w-xs">
+                        Elite security solutions for a world that demands the highest level of protection.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-8 h-8 rounded border border-brand-lightgray flex items-center justify-center text-brand-textmuted hover:text-white hover:border-white transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="w-8 h-8 rounded border border-brand-lightgray flex items-center justify-center text-brand-textmuted hover:text-white hover:border-white transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-8 h-8 rounded border border-brand-lightgray flex items-center justify-center text-brand-textmuted hover:text-white hover:border-white transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h6 class="text-white font-bold text-xs uppercase tracking-wider mb-6">SERVICES</h6>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Executive Protection</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Corporate Security</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">VIP Escort</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Event Security</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Residential Security</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Risk Assessment</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Surveillance Systems</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Rapid Response Teams</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h6 class="text-white font-bold text-xs uppercase tracking-wider mb-6">COMPANY</h6>
+                    <ul class="space-y-3">
+                        <li><a href="#about" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">About Us</a></li>
+                        <li><a href="#why-us" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Why Hardline</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Our Process</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">News & Insights</a></li>
+                        <li><a href="#" class="text-brand-textmuted hover:text-brand-red text-sm transition-colors">Client Portal</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h6 class="text-white font-bold text-xs uppercase tracking-wider mb-6">CONTACT</h6>
+                    <ul class="space-y-3 mb-8">
+                        <li class="text-brand-textmuted text-sm"><span class="block text-white mb-1">Head Office</span>Nairobi, Kenya</li>
+                        <li><a href="tel:+254700123456" class="text-brand-textmuted hover:text-white text-sm transition-colors">+254 700 123 456</a></li>
+                        <li><a href="mailto:info@hardlinesecurity.co.ke" class="text-brand-textmuted hover:text-white text-sm transition-colors">info@hardlinesecurity.co.ke</a></li>
+                        <li class="pt-2"><span class="block text-brand-textmuted text-xs mb-1">24/7 Emergency Hotline</span><a href="tel:+254700999000" class="text-brand-red font-bold hover:text-white transition-colors">+254 700 999 000</a></li>
+                    </ul>
+
+                    <h6 class="text-white font-bold text-xs uppercase tracking-wider mb-4">STAY CONNECTED</h6>
+                    <p class="text-brand-textmuted text-xs mb-3">Subscribe for security updates and insights.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="Your email address" class="bg-brand-gray border border-brand-lightgray text-white px-4 py-2 text-sm w-full focus:outline-none focus:border-brand-red placeholder-gray-600">
+                        <button type="submit" class="bg-brand-lightgray hover:bg-brand-red text-white px-4 transition-colors border border-brand-lightgray hover:border-brand-red border-l-0">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-brand-lightgray flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-brand-textmuted text-xs text-center md:text-left">&copy; 2026 Hardline Security Services. All rights reserved.</p>
+                <div class="flex gap-6 text-xs">
+                    <a href="#" class="text-brand-textmuted hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-brand-textmuted hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Loader: run until page fully loaded, then hold briefly for effect
+        window.addEventListener('load', () => {
+            setTimeout(() => { document.getElementById('loader').classList.add('done'); }, 1600);
+        });
+        // Fallback in case load event is delayed
+        setTimeout(() => { document.getElementById('loader').classList.add('done'); }, 4000);
+
+        // Header shadow on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('siteHeader');
+            header.classList.toggle('scrolled', window.scrollY > 40);
+        });
+
+        // Mobile menu toggle
+        const mobileBtn = document.getElementById('mobileBtn');
+        const mobileBtnIcon = document.getElementById('mobileBtnIcon');
+        const mobileNav = document.getElementById('mobileNav');
+
+        mobileBtn.addEventListener('click', () => {
+            const isOpen = mobileNav.classList.toggle('open');
+            mobileBtnIcon.classList.toggle('fa-bars', !isOpen);
+            mobileBtnIcon.classList.toggle('fa-xmark', isOpen);
+        });
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileNav.classList.remove('open');
+                mobileBtnIcon.classList.remove('fa-xmark');
+                mobileBtnIcon.classList.add('fa-bars');
+            });
+        });
+    </script>
+</body>
+</html>
